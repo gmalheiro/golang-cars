@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/bootcamp-go/web/response"
@@ -39,6 +40,11 @@ func (h *VehicleDefault) GetAll() http.HandlerFunc {
 			response.JSON(w, http.StatusInternalServerError, nil)
 			return
 		}
+
+		if errors.Is(err, internal.ErrNotAvailableCars) {
+			response.JSON(w, http.StatusNotFound, nil)
+		}
+
 		data := make(map[int]VehicleJSON)
 		for key, value := range v {
 			data[key] = VehicleJSON{

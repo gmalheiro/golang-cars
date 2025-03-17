@@ -1,6 +1,8 @@
 package repository
 
-import "github.com/gmalheiro/playground/internal"
+import (
+	"github.com/gmalheiro/playground/internal"
+)
 
 type VehicleMap struct {
 	db map[int]internal.Vehicle
@@ -18,6 +20,9 @@ func (r *VehicleMap) FindAll() (v map[int]internal.Vehicle, err error) {
 	v = make(map[int]internal.Vehicle)
 	for key, value := range r.db {
 		v[key] = value
+	}
+	if len(v) == 0 {
+		err = internal.ErrNotAvailableCars
 	}
 	return
 }
