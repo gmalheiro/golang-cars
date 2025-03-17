@@ -3,6 +3,7 @@ package handler
 import (
 	"errors"
 	"net/http"
+	"strconv"
 
 	"github.com/bootcamp-go/web/request"
 	"github.com/bootcamp-go/web/response"
@@ -100,5 +101,39 @@ func (h *VehicleDefault) Create() http.HandlerFunc {
 		}
 
 		response.JSON(w, http.StatusCreated, v)
+	}
+}
+
+func (h *VehicleDefault) GetByWeight() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		minStr := r.URL.Query().Get("min")
+		maxStr := r.URL.Query().Get("max")
+
+		if minStr == "" || maxStr == "" {
+			body := map[string]any{"message": "invalid query params", "data": nil}
+			response.JSON(w, http.StatusBadRequest, body)
+			return
+		}
+
+		min, minErr := strconv.ParseFloat(minStr, 64)
+		max, maxErr := strconv.ParseFloat(maxStr, 64)
+
+		if maxErr != nil || minErr != nil {
+			body := map[string]any{"message": "float conversion failed", "data": nil}
+			response.JSON(w, http.StatusBadGateway, body)
+			return
+		}
+
+		data, err := h.sv.GetByWeight(min, max)
+		if errors.Is(err, internal.ErrNotAvailableCars) {
+			body := map[string]any{"message": "Cars not found", "data": err}
+			response.JSON(w, http.StatusNotFound, body)
+		}
+		if err != nil {
+			body := map[string]any{"message": "error in finding by weight", "data": err}
+			response.JSON(w, http.StatusBadRequest, body)
+		}
+		body := map[string]any{"message": "cars retrieved sucess", "data": data}
+		response.JSON(w, http.StatusOK, body)
 	}
 }

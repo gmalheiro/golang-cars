@@ -43,3 +43,16 @@ func (r *VehicleMap) Create(vh internal.Vehicle) (v internal.Vehicle, err error)
 	v = vh
 	return
 }
+
+func (r *VehicleMap) GetByWeight(min, max float64) (v map[int]internal.Vehicle, err error) {
+	v = make(map[int]internal.Vehicle)
+	for key, value := range r.db {
+		if r.db[key].Weight >= min && r.db[key].Weight <= max {
+			v[key] = value
+		}
+	}
+	if len(v) == 0 {
+		err = internal.ErrNotAvailableCars
+	}
+	return
+}

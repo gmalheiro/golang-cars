@@ -19,3 +19,8 @@ func (s *VehicleDefault) Create(vh internal.Vehicle) (v internal.Vehicle, err er
 	v, err = s.rp.Create(vh)
 	return
 }
+
+func (s *VehicleDefault) GetByWeight(min, max float64) (v map[int]internal.Vehicle, err error) {
+	v, err = s.rp.GetByWeight(min, max)
+	return
+}
