@@ -57,6 +57,7 @@ func (a *ServerChi) Run() (err error) {
 
 	rt.Route("/vehicles", func(rt chi.Router) {
 		rt.Get("/", hd.GetAll())
+		rt.Post("/", hd.Create())
 	})
 	fmt.Printf("Server listening to%s", a.serverAddress)
 	err = http.ListenAndServe(a.serverAddress, rt)

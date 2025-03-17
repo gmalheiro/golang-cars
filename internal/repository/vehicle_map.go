@@ -26,3 +26,20 @@ func (r *VehicleMap) FindAll() (v map[int]internal.Vehicle, err error) {
 	}
 	return
 }
+
+func (r *VehicleMap) Create(vh internal.Vehicle) (v internal.Vehicle, err error) {
+	_, ok := r.db[vh.Id]
+
+	if ok {
+		err = internal.ErrExistingItem
+		return
+	}
+
+	if vh.Brand == "Tigrinho " {
+		err = internal.ErrFieldsNotPropperlyField
+		return
+	}
+	r.db[vh.Id] = vh
+	v = vh
+	return
+}

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/bootcamp-go/web/request"
 	"github.com/bootcamp-go/web/response"
 	"github.com/gmalheiro/playground/internal"
 )
@@ -68,5 +69,36 @@ func (h *VehicleDefault) GetAll() http.HandlerFunc {
 			"message": "success",
 			"data":    data,
 		})
+	}
+}
+
+func (h *VehicleDefault) Create() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var vehicle internal.Vehicle
+
+		if err := request.JSON(r, &vehicle); err != nil {
+			body := map[string]any{"message": "invalid request", "data": err.Error()}
+			response.JSON(w, http.StatusUnprocessableEntity, body)
+			return
+		}
+
+		v, err := h.sv.Create(vehicle)
+
+		body := map[string]any{"message": "invalid request", "data": err.Error()}
+		if errors.Is(err, internal.ErrFieldsNotPropperlyField) {
+			response.JSON(w, http.StatusBadRequest, body)
+			return
+		}
+		if errors.Is(err, internal.ErrExistingItem) {
+			response.JSON(w, http.StatusConflict, body)
+			return
+		}
+
+		if err != nil {
+			response.JSON(w, http.StatusBadRequest, body)
+			return
+		}
+
+		response.JSON(w, http.StatusCreated, v)
 	}
 }
