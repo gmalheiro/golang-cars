@@ -8,6 +8,7 @@ import (
 	"github.com/bootcamp-go/web/request"
 	"github.com/bootcamp-go/web/response"
 	"github.com/gmalheiro/playground/internal"
+	"github.com/go-chi/chi/v5"
 )
 
 type VehicleJSON struct {
@@ -135,5 +136,40 @@ func (h *VehicleDefault) GetByWeight() http.HandlerFunc {
 		}
 		body := map[string]any{"message": "cars retrieved sucess", "data": data}
 		response.JSON(w, http.StatusOK, body)
+	}
+}
+
+func (h *VehicleDefault) UpdateFuel() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		idStr := chi.URLParam(r, "id")
+		if idStr == "" {
+			body := map[string]any{"message": "Missing id field", "data": nil}
+			response.JSON(w, http.StatusBadRequest, body)
+		}
+
+		id, idErr := strconv.Atoi(idStr)
+		if idErr != nil {
+			body := map[string]any{"message": "error while parsing string to int", "data": nil}
+			response.JSON(w, http.StatusBadGateway, body)
+			return
+		}
+
+		var vehicle internal.Vehicle
+		if err := request.JSON(r, &vehicle); err != nil {
+			body := map[string]any{"message": "invalid request body", "data": nil}
+			response.JSON(w, http.StatusUnprocessableEntity, body)
+			return
+		}
+		v, err := h.sv.UpdateFuel(vehicle, id)
+		if errors.Is(err, internal.ErrItemNotFound) {
+			body := map[string]any{"message": "Vehicle not found", "data": nil}
+			response.JSON(w, http.StatusNotFound, body)
+			return
+		}
+		if err != nil {
+
+		}
+		response.JSON(w, http.StatusOK, v)
+		return
 	}
 }

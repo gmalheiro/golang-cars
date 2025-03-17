@@ -59,6 +59,7 @@ func (a *ServerChi) Run() (err error) {
 		rt.Get("/", hd.GetAll())
 		rt.Post("/", hd.Create())
 		rt.Get("/weight", hd.GetByWeight())
+		rt.Put("/{id}/update_fuel", hd.UpdateFuel())
 	})
 	fmt.Printf("Server listening to%s", a.serverAddress)
 	err = http.ListenAndServe(a.serverAddress, rt)

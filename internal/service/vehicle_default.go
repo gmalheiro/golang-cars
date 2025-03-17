@@ -24,3 +24,8 @@ func (s *VehicleDefault) GetByWeight(min, max float64) (v map[int]internal.Vehic
 	v, err = s.rp.GetByWeight(min, max)
 	return
 }
+
+func (s *VehicleDefault) UpdateFuel(vh internal.Vehicle, id int) (v internal.Vehicle, err error) {
+	v, err = s.rp.UpdateFuel(vh, id)
+	return
+}

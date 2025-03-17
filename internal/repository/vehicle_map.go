@@ -56,3 +56,14 @@ func (r *VehicleMap) GetByWeight(min, max float64) (v map[int]internal.Vehicle, 
 	}
 	return
 }
+
+func (r *VehicleMap) UpdateFuel(vh internal.Vehicle, id int) (v internal.Vehicle, err error) {
+	vehicle, ok := r.db[id]
+	if !ok {
+		err = internal.ErrItemNotFound
+		return
+	}
+	vehicle.FuelType = vh.FuelType
+	v = vehicle
+	return
+}
