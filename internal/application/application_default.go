@@ -56,7 +56,7 @@ func (a *ServerChi) Run() (err error) {
 	rt.Use(middleware.Recoverer)
 
 	rt.Route("/vehicles", func(rt chi.Router) {
-		rt.Get("/", hd.GetAll)
+		rt.Get("/", hd.GetAll())
 	})
 	fmt.Printf("Server listening to%s", a.serverAddress)
 	err = http.ListenAndServe(a.serverAddress, rt)
